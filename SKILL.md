@@ -79,7 +79,7 @@ O código tem uma parte fixa e testada, igual em todo app, e uma parte que você
 | `App.gs` | Descreve o app (`APP`, `TABELAS`) e suas regras | Escreve, partindo de `assets/app-web/App.gs` ou `assets/planilha/App.gs` |
 | `index.html` | A tela do app. Só no app da Web | Escreve, partindo de `assets/app-web/index.html` |
 
-Para ver um app completo nessa estrutura, testado no Google de verdade, leia `assets/exemplos/habitos/`: um rastreador de hábitos com identidade, versão de 2 minutos, sequência e corrente de dias, em que o toque responde na hora.
+Para ver um app completo nessa estrutura, leia `assets/exemplos/habitos/`: um rastreador de hábitos com identidade, versão de 2 minutos, sequência e corrente de dias, em que o toque responde na hora.
 
 Por que assim: a segurança (texto que nunca vira fórmula, conferência do dono, validação, uma gravação por vez) não depende de ser reescrita certo a cada app; a pessoa cola os arquivos fixos uma vez e, nas melhorias, só App e index mudam; e separar HTML, CSS e JavaScript em arquivos incluídos é a recomendação do próprio Google para o HTML Service.
 
@@ -153,7 +153,7 @@ Na prática: o app da Web leva de 1 a 3 segundos para responder, então devolva 
 | `references/arquitetura.md` | Antes de escrever o primeiro App: estrutura, `TABELAS` e funções do núcleo |
 | `assets/nucleo/` | Arquivos fixos: copie iguais |
 | `assets/app-web/`, `assets/planilha/` | Pontos de partida do App (e do index) |
-| `assets/exemplos/habitos/` | Exemplo completo de app da Web, testado no Google: toque com resposta imediata, sequências, formulário guiado |
+| `assets/exemplos/habitos/` | Exemplo completo de app da Web: toque com resposta imediata, sequências, formulário guiado |
 | `references/instalacao.md` | Ao guiar a instalação, ao atualizar o app e quando algo dá errado |
 | `references/seguranca.md` | Antes de entregar código, na tela de autorização e no resumo final |
 | `references/automacoes.md` | Lembretes por e-mail, avisos e tarefas que rodam sozinhas |

@@ -87,7 +87,7 @@ Dados:
 
 As três funções que gravam já usam a trava. Para uma operação que lê, decide e grava (ex.: conferir e registrar o vencedor do bingo), envolva tudo em `comTrava_(function () { ... })`; a trava pode ser aninhada.
 
-**Memória por chamada.** Cada chamada ao app começa do zero no Google, e abrir a planilha e ler uma aba custa tempo. Por isso, dentro de uma mesma chamada, o núcleo abre a planilha uma vez e guarda o que já leu: a segunda `lerLinhas_` da mesma aba vem da memória. As funções que gravam relêem a aba dentro da trava (outra pessoa pode ter acabado de gravar) e apagam a memória daquela aba depois. Duas regras para o App: não altere os objetos que `lerLinhas_` devolve (copie antes), e grave sempre pelas funções do núcleo, para a memória não ficar velha. No teste real, isso derrubou o tempo de uma ação de cerca de 4 para 2 segundos.
+**Memória por chamada.** Cada chamada ao app começa do zero no Google, e abrir a planilha e ler uma aba custa tempo. Por isso, dentro de uma mesma chamada, o núcleo abre a planilha uma vez e guarda o que já leu: a segunda `lerLinhas_` da mesma aba vem da memória. As funções que gravam relêem a aba dentro da trava (outra pessoa pode ter acabado de gravar) e apagam a memória daquela aba depois. Duas regras para o App: não altere os objetos que `lerLinhas_` devolve (copie antes), e grave sempre pelas funções do núcleo, para a memória não ficar velha.
 
 **Ações de um toque.** Para marcar, curtir ou riscar algo, a tela pode mudar na hora e o servidor confirmar depois; se ele recusar, a tela volta e mostra o motivo. O exemplo `assets/exemplos/habitos/` faz isso (veja `comMarcacao` no index).
 

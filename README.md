@@ -16,6 +16,24 @@ Funciona no **Claude**, no **Codex**, no **opencode** e no **Antigravity**, porq
 
 ## Como instalar
 
+**O jeito mais fácil: mande o link para o seu agente.** No Claude Code, no Codex, no opencode ou no Antigravity, cole esta mensagem:
+
+```text
+Instale a skill deste link para mim: https://github.com/casanovadiogo-cell/apps-na-planilha
+```
+
+O agente lê as instruções abaixo, copia a skill para a pasta certa e avisa quando terminar. Depois, abra uma conversa nova e peça o seu app.
+
+No claude.ai e no app de chat do Claude, a conversa não consegue instalar skills sozinha: baixe `apps-na-planilha.skill` na [página de versões](https://github.com/casanovadiogo-cell/apps-na-planilha/releases/latest) e envie nas configurações do Claude, na seção **Skills** (com a execução de código ligada).
+
+### Para o agente que vai instalar
+
+1. Descubra em qual ferramenta você está e use a pasta de skills dela, da tabela abaixo.
+2. Se a pasta `apps-na-planilha` já existir lá, atualize em vez de copiar de novo: `git -C <pasta> pull`.
+3. Senão, copie: `git clone https://github.com/casanovadiogo-cell/apps-na-planilha <pasta>`. No PowerShell do Windows, use `$HOME` no lugar de `~`. Sem git, baixe `apps-na-planilha.zip` da página de versões e extraia na pasta de skills (o zip já traz a pasta `apps-na-planilha`).
+4. Confira se existe `<pasta>/SKILL.md`. Não rode nenhum script do repositório: instalar é só copiar a pasta.
+5. Diga à pessoa onde a skill ficou e que ela precisa abrir uma conversa nova (ou reiniciar a ferramenta) para a skill aparecer.
+
 | Ferramenta | Pasta da skill |
 |---|---|
 | Claude (claude.ai e app) | enviada nas configurações, seção Skills |
@@ -24,7 +42,7 @@ Funciona no **Claude**, no **Codex**, no **opencode** e no **Antigravity**, porq
 | opencode | `~/.agents/skills/apps-na-planilha` (a mesma do Codex) |
 | Antigravity (app, editor e terminal) | `~/.gemini/config/skills/apps-na-planilha` |
 
-**Claude (claude.ai ou app do Claude):** baixe `apps-na-planilha.skill` na [página de versões](https://github.com/casanovadiogo-cell/apps-na-planilha/releases/latest) e envie nas configurações do Claude, na seção **Skills**. É preciso estar com a execução de código ligada.
+### Instalar na mão
 
 **Com git**, um comando para a sua ferramenta:
 
@@ -76,7 +94,7 @@ references/               guias: formatos, arquitetura, instalação, segurança
 assets/nucleo/            arquivos fixos e testados (Nucleo.gs, Tarefas.gs, base.html)
 assets/app-web/           ponto de partida de um app da Web
 assets/planilha/          ponto de partida de uma planilha com automações
-assets/exemplos/habitos/  exemplo completo, testado no Google: hábitos com as ideias do Atomic Habits
+assets/exemplos/habitos/  exemplo completo: hábitos com as ideias do Atomic Habits
 scripts/revisar_seguranca.py   verificador de segurança
 LICENSE                   licença MIT
 ```
