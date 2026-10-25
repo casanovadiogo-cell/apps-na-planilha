@@ -1,0 +1,158 @@
+<!-- ============================================================
+     BASE · skill "apps-na-planilha" · versão 1
+     Visual e ajudantes comuns a todo app da Web. Não edite: quando
+     houver versão nova, ela vem inteira. O que é só do app vai no index.
+     ============================================================ -->
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f4f5f3;
+    --card: #ffffff;
+    --ink: #17201c;
+    --muted: #5c6b65;
+    --line: #e1e5e2;
+    --accent: #0f766e;
+    --on-accent: #ffffff;
+    --accent-soft: #e3f2ef;
+    --bad: #b42318;
+    --bad-soft: #fdecea;
+    --radius: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101413;
+      --card: #1a1f1d;
+      --ink: #e7ece9;
+      --muted: #9aa8a2;
+      --line: #2b3330;
+      --accent: #2dd4bf;
+      --on-accent: #042f2a;
+      --accent-soft: #123a35;
+      --bad: #f97066;
+      --bad-soft: #3a1d1b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .app { max-width: 560px; margin: 0 auto; padding: 16px 16px 96px; }
+  .topo { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 16px; }
+  h1 { font-size: 1.35rem; margin: 0; }
+  h2 { font-size: 1rem; margin: 0 0 12px; }
+  .cartao { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+  .rotulo { margin: 0; color: var(--muted); font-size: .9rem; }
+  .destaque { margin: 2px 0 12px; font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .barras { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .barras li { display: grid; grid-template-columns: 7.5em 1fr auto; gap: 10px; align-items: center; font-size: .9rem; }
+  .barras .nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .barra { height: 8px; background: var(--accent-soft); border-radius: 99px; overflow: hidden; }
+  .barra span { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+  .valor { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  form { display: grid; gap: 12px; }
+  .lado-a-lado { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  label { display: grid; gap: 4px; font-size: .85rem; color: var(--muted); }
+  input, select, textarea { width: 100%; min-width: 0; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+  input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button { font: inherit; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: default; }
+  .primario { background: var(--accent); color: var(--on-accent); border: 0; border-radius: 12px; padding: 12px; font-weight: 600; }
+  .icone { background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 12px; width: 40px; height: 40px; font-size: 1.1rem; }
+  .discreto { background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 10px; padding: 6px 10px; font-size: .8rem; }
+  .discreto.confirmar { border-color: var(--bad); color: var(--bad); background: var(--bad-soft); }
+  .dica, .vazio { margin: 0; font-size: .85rem; color: var(--muted); }
+  .dia { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 16px 0 6px; }
+  .dia:first-child { margin-top: 0; }
+  .item { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .info { display: grid; min-width: 0; }
+  .info > :first-child { overflow-wrap: anywhere; }
+  .sub { font-size: .8rem; color: var(--muted); }
+  .aviso { position: fixed; left: 16px; right: 16px; bottom: 16px; max-width: 528px; margin: 0 auto; background: var(--ink); color: var(--bg); border-radius: 12px; padding: 12px 16px; opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; pointer-events: none; }
+  .aviso.visivel { opacity: 1; transform: none; }
+  .aviso.erro { background: var(--bad); color: #fff; }
+  .carregando .destaque, .carregando .lista { opacity: .4; }
+</style>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const dinheiro = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+  // Regra de segurança: todo dado que vem da planilha passa por esc() antes de virar HTML.
+  function esc(valor) {
+    return String(valor ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  }
+
+  // Chama uma função do servidor (arquivo App) e devolve uma Promise.
+  function chamar(funcao, ...args) {
+    return new Promise((resolve, reject) => {
+      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[funcao](...args);
+    });
+  }
+
+  function textoDoErro(erro) {
+    const msg = (erro && erro.message) || String(erro || '');
+    return msg.replace(/^(Error|Exception|Erro):\s*/i, '') || 'Algo deu errado. Tente de novo.';
+  }
+
+  let avisoTimer;
+  function avisar(texto, tipo) {
+    let el = $('aviso');
+    if (!el) {
+      el = document.createElement('p');
+      el.id = 'aviso';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      document.body.appendChild(el);
+    }
+    el.textContent = texto;
+    el.className = 'aviso visivel ' + (tipo || '');
+    clearTimeout(avisoTimer);
+    avisoTimer = setTimeout(() => { el.className = 'aviso'; }, tipo === 'erro' ? 6000 : 2500);
+  }
+
+  // Desliga o botão enquanto a tarefa roda e mostra o erro em linguagem simples.
+  let ocupadoAgora = false;
+  async function enquantoSalva(botao, textoTemporario, tarefa) {
+    if (ocupadoAgora) return;
+    ocupadoAgora = true;
+    const original = botao.textContent;
+    botao.disabled = true;
+    botao.textContent = textoTemporario;
+    try {
+      return await tarefa();
+    } catch (erro) {
+      avisar(textoDoErro(erro), 'erro');
+    } finally {
+      ocupadoAgora = false;
+      botao.disabled = false;
+      botao.textContent = original;
+    }
+  }
+
+  // Ações que apagam algo pedem um segundo toque em até 3 segundos, sem janela pop-up.
+  function confirmarComSegundoToque(botao, texto = 'Confirmar') {
+    if (botao.dataset.confirmar === 'sim') return true;
+    const original = botao.textContent;
+    botao.dataset.confirmar = 'sim';
+    botao.textContent = texto;
+    botao.classList.add('confirmar');
+    setTimeout(() => {
+      if (!botao.isConnected) return;
+      botao.dataset.confirmar = '';
+      botao.textContent = original;
+      botao.classList.remove('confirmar');
+    }, 3000);
+    return false;
+  }
+
+  function nomeDoMes(mes) {
+    const [ano, m] = mes.split('-').map(Number);
+    return new Date(ano, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  }
+
+  function rotuloDoDia(iso, hoje) {
+    if (!iso) return 'Sem data';
+    if (iso === hoje) return 'Hoje';
+    const dia = new Date(iso + 'T12:00:00');
+    const diferenca = Math.round((new Date(hoje + 'T12:00:00') - dia) / 86400000);
+    if (diferenca === 1) return 'Ontem';
+    return dia.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+  }
+</script>

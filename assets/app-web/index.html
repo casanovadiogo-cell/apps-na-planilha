@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <?!= incluir('base'); ?>
+</head>
+<body class="carregando">
+  <main class="app">
+    <header class="topo">
+      <h1 id="titulo">Carregando…</h1>
+      <button id="atualizar" class="icone" type="button" aria-label="Atualizar">↻</button>
+    </header>
+
+    <section class="cartao" aria-labelledby="resumo-rotulo">
+      <p class="rotulo" id="resumo-rotulo">Total de <span id="mes">este mês</span></p>
+      <p class="destaque" id="total">R$ 0,00</p>
+      <ul class="barras" id="categorias-mes"></ul>
+    </section>
+
+    <section class="cartao">
+      <h2>Novo registro</h2>
+      <form id="form" autocomplete="off">
+        <div class="lado-a-lado">
+          <label>Valor <input id="valor" inputmode="decimal" placeholder="0,00" required></label>
+          <label>Data <input id="data" type="date" required></label>
+        </div>
+        <label>Descrição <input id="descricao" maxlength="120" placeholder="Ex.: feira da semana" required></label>
+        <label>Categoria <select id="categoria" required></select></label>
+        <p id="sem-categorias" class="dica" hidden>Cadastre categorias na aba Categorias da planilha e toque em ↻.</p>
+        <button id="salvar" class="primario" type="submit">Salvar</button>
+      </form>
+    </section>
+
+    <section class="cartao">
+      <h2>Recentes</h2>
+      <div id="lista" class="lista"><p class="vazio">Carregando…</p></div>
+    </section>
+  </main>
+
+  <script>
+    function desenhar(tela) {
+      $('titulo').textContent = tela.nome;
+      $('mes').textContent = nomeDoMes(tela.resumo.mes);
+      $('total').textContent = dinheiro.format(tela.resumo.total);
+
+      const maior = Math.max(1, ...tela.resumo.categorias.map((c) => c.valor));
+      $('categorias-mes').innerHTML = tela.resumo.categorias.map((c) => `
+        <li>
+          <span class="nome">${esc(c.nome)}</span>
+          <span class="barra"><span style="width:${Math.round((c.valor / maior) * 100)}%"></span></span>
+          <span class="valor">${esc(dinheiro.format(c.valor))}</span>
+        </li>`).join('') || '<li class="vazio">Nada registrado neste mês.</li>';
+
+      const select = $('categoria');
+      const escolhida = select.value;
+      select.innerHTML = '<option value="">Escolha…</option>' + tela.categorias
+        .map((c) => `<option value="${esc(c)}"${c === escolhida ? ' selected' : ''}>${esc(c)}</option>`).join('');
+      $('sem-categorias').hidden = tela.categorias.length > 0;
+
+      if (!tela.recentes.length) {
+        $('lista').innerHTML = '<p class="vazio">Seus registros aparecem aqui.</p>';
+        return;
+      }
+      let html = '';
+      let diaAtual = null;
+      for (const r of tela.recentes) {
+        if (r.data !== diaAtual) {
+          diaAtual = r.data;
+          html += `<h3 class="dia">${esc(rotuloDoDia(r.data, tela.hoje))}</h3>`;
+        }
+        html += `
+          <div class="item">
+            <div class="info"><span>${esc(r.descricao)}</span><span class="sub">${esc(r.categoria)}</span></div>
+            <span class="valor">${esc(dinheiro.format(r.valor))}</span>
+            <button type="button" class="discreto" data-id="${esc(r.id)}" aria-label="Excluir ${esc(r.descricao)}">Excluir</button>
+          </div>`;
+      }
+      $('lista').innerHTML = html;
+    }
+
+    async function carregar() {
+      document.body.classList.add('carregando');
+      try {
+        const tela = await chamar('carregarTela');
+        desenhar(tela);
+        if (!$('data').value) $('data').value = tela.hoje;
+      } catch (erro) {
+        avisar(textoDoErro(erro), 'erro');
+      } finally {
+        document.body.classList.remove('carregando');
+      }
+    }
+
+    $('form').addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const categoria = $('categoria').value;
+      enquantoSalva($('salvar'), 'Salvando…', async () => {
+        const tela = await chamar('salvarRegistro', {
+          valor: $('valor').value,
+          data: $('data').value,
+          descricao: $('descricao').value,
+          categoria: categoria
+        });
+        $('form').reset();
+        desenhar(tela);
+        $('data').value = tela.hoje;
+        $('categoria').value = categoria;
+        avisar('Salvo!');
+        $('valor').focus();
+      });
+    });
+
+    $('lista').addEventListener('click', (evento) => {
+      const botao = evento.target.closest('button[data-id]');
+      if (!botao || !confirmarComSegundoToque(botao)) return;
+      enquantoSalva(botao, '…', async () => {
+        desenhar(await chamar('excluirRegistro', botao.dataset.id));
+        avisar('Registro excluído.');
+      });
+    });
+
+    $('atualizar').addEventListener('click', carregar);
+    carregar();
+  </script>
+</body>
+</html>
