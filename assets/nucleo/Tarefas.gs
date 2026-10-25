@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  TAREFAS · skill "apps-na-planilha" · versão 1
+ *  TAREFAS · skill "apps-na-planilha" · versão 2
  * ============================================================
  *  Arquivo fixo, só para apps com tarefas automáticas (APP.tarefas no
  *  arquivo App). Não edite. Ele fica separado do núcleo porque o Google
@@ -27,7 +27,9 @@ function instalarGatilhos() {
   nomes.forEach(function (nome) {
     var quando = tarefas[nome];
     if (typeof quando === 'number' && quando >= 0 && quando <= 23) {
-      ScriptApp.newTrigger(nome).timeBased().everyDays(1).atHour(quando).create();
+      // O fuso vem do app: projeto novo nasce no fuso de Nova York.
+      ScriptApp.newTrigger(nome).timeBased().everyDays(1).atHour(quando)
+        .inTimezone(APP.fuso || Session.getScriptTimeZone()).create();
     } else if (quando === 'formulario') {
       ScriptApp.newTrigger(nome).forSpreadsheet(planilha_()).onFormSubmit().create();
     } else if (quando === 'edicao') {

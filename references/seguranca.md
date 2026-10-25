@@ -86,7 +86,7 @@ Um resumo curto, de 4 a 7 pontos, escolhidos para o app em questão:
 
 - Você é responsável pelos dados que coletar de outras pessoas. Peça o mínimo (um apelido costuma bastar) e apague depois que o evento acabar.
 - Teste numa janela anônima ou com outra conta para ver exatamente o que os outros veem.
-- No app da Web, os outros veem uma faixa do Google dizendo que o app foi criado por um usuário. É normal.
+- No app da Web, todo mundo vê uma faixa do Google dizendo que o app foi criado por um usuário do Apps Script, inclusive você. É normal, e cada pessoa pode fechar.
 
 ### 5.4 Antes de colocar IA para ler os dados
 

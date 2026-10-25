@@ -76,6 +76,7 @@ references/               guias: formatos, arquitetura, instalação, segurança
 assets/nucleo/            arquivos fixos e testados (Nucleo.gs, Tarefas.gs, base.html)
 assets/app-web/           ponto de partida de um app da Web
 assets/planilha/          ponto de partida de uma planilha com automações
+assets/exemplos/habitos/  exemplo completo, testado no Google: hábitos com as ideias do Atomic Habits
 scripts/revisar_seguranca.py   verificador de segurança
 LICENSE                   licença MIT
 ```

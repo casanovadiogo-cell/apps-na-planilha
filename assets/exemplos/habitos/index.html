@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <?!= incluir('base'); ?>
+  <style>
+    .habito .cabeca { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px; }
+    .habito h2 { margin: 0; font-size: 1.1rem; }
+    .habito p { margin: 0 0 10px; }
+    .deixa { font-size: .9rem; }
+    .recado { padding: 8px 10px; border-radius: 10px; background: var(--accent-soft); font-size: .88rem; }
+    .corrente { display: grid; grid-template-columns: repeat(21, 1fr); gap: 3px; margin-bottom: 6px; }
+    .corrente span { aspect-ratio: 1; border-radius: 3px; border: 1px solid var(--line); }
+    .corrente .completo { background: var(--accent); border-color: var(--accent); }
+    .corrente .minimo { background: var(--accent-soft); border-color: var(--accent); }
+    .corrente .hoje { border-style: dashed; border-color: var(--accent); }
+    .corrente .antes { border-color: transparent; }
+    .acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .secundario { background: none; border: 1px solid var(--accent); color: var(--accent); border-radius: 12px; padding: 12px; font-weight: 600; }
+    .feito { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+    .feito strong { color: var(--accent); }
+    .largo { width: 100%; margin-bottom: 16px; }
+  </style>
+</head>
+<body class="carregando">
+  <main class="app">
+    <header class="topo">
+      <h1 id="titulo">Hábitos Atômicos</h1>
+      <button id="atualizar" class="icone" type="button" aria-label="Atualizar">↻</button>
+    </header>
+
+    <section class="cartao">
+      <p class="rotulo" id="dia">Hoje</p>
+      <p class="destaque" id="placar">–</p>
+      <p class="sub" id="votos"></p>
+    </section>
+
+    <div id="lista" class="lista"><p class="vazio">Carregando…</p></div>
+
+    <button id="novo" class="primario largo" type="button">+ Novo hábito</button>
+
+    <section id="painel" class="cartao" hidden>
+      <h2 id="titulo-form">Novo hábito</h2>
+      <form id="form" autocomplete="off">
+        <label>Quem você quer ser? <input id="identidade" maxlength="80" placeholder="Ex.: Sou uma pessoa que lê" required></label>
+        <label>Que hábito confirma isso? <input id="nome" maxlength="40" placeholder="Ex.: Ler" required></label>
+        <label>Versão de 2 minutos <input id="minimo" maxlength="80" placeholder="Ex.: Ler uma página" required></label>
+        <label>Quando e onde? <input id="deixa" maxlength="100" placeholder="Ex.: Depois do café, no sofá da sala" required></label>
+        <label>O que torna bom? (opcional) <input id="recompensa" maxlength="100" placeholder="Ex.: Um café especial enquanto leio"></label>
+        <p class="dica">Comece pequeno. Aparecer todo dia, nem que seja pela versão de 2 minutos, conta mais do que fazer muito de vez em quando.</p>
+        <div class="lado-a-lado">
+          <button id="salvar" class="primario" type="submit">Salvar</button>
+          <button id="cancelar" class="discreto" type="button">Cancelar</button>
+        </div>
+        <button id="arquivar" class="discreto" type="button" hidden>Arquivar hábito</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    let tela = null;
+    let editando = null; // id do hábito aberto no formulário, ou null para um novo
+
+    const CLASSE_DO_DIA = { 'completo': 'completo', '2 minutos': 'minimo', 'hoje': 'hoje', 'antes': 'antes', 'falhou': '' };
+    const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
+
+    function recadoDo(h) {
+      if (h.hoje) return h.recompensa ? `Hora da recompensa: ${h.recompensa}` : '';
+      if (h.faltas === 1) return 'Ontem passou. Para não falhar duas vezes, hoje já vale a versão de 2 minutos.';
+      if (h.faltas >= 2) return `Recomece hoje pelo mínimo: ${h.minimo}.`;
+      return '';
+    }
+
+    function cartaoDo(h) {
+      const recado = recadoDo(h);
+      const dias = h.corrente.map((c) => `<span class="${CLASSE_DO_DIA[c] ?? ''}"></span>`).join('');
+      const acoes = h.hoje
+        ? `<div class="feito"><strong>✓ Feito${h.hoje === '2 minutos' ? ' (2 minutos)' : ''}</strong>
+             <button type="button" class="discreto" data-acao="desfazer" data-id="${esc(h.id)}">Desfazer</button></div>`
+        : `<div class="acoes">
+             <button type="button" class="primario" data-acao="completo" data-id="${esc(h.id)}">Fiz</button>
+             <button type="button" class="secundario" data-acao="2 minutos" data-id="${esc(h.id)}">Só 2 minutos</button>
+           </div>`;
+      return `
+        <article class="cartao habito">
+          <div class="cabeca">
+            <h2>${esc(h.nome)}</h2>
+            <button type="button" class="discreto" data-acao="editar" data-id="${esc(h.id)}">Editar</button>
+          </div>
+          <p class="sub">${esc(plural(h.votos, 'voto', 'votos'))} para: ${esc(h.identidade)}</p>
+          <p class="deixa"><span class="sub">Quando:</span> ${esc(h.deixa)}</p>
+          ${recado ? `<p class="recado">${esc(recado)}</p>` : ''}
+          <div class="corrente" aria-hidden="true">${dias}</div>
+          <p class="sub">${esc(h.sequencia ? 'Sequência: ' + plural(h.sequencia, 'dia', 'dias') : 'Sequência: comece hoje')}</p>
+          ${acoes}
+        </article>`;
+    }
+
+    function desenhar(t) {
+      tela = t;
+      $('titulo').textContent = t.nome;
+      $('dia').textContent = new Date(t.hoje + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+      $('placar').textContent = t.habitos.length ? `${t.feitosHoje} de ${t.habitos.length}` : '–';
+      $('votos').textContent = t.habitos.length ? `hábitos feitos hoje · ${plural(t.votos, 'voto', 'votos')} no total` : '';
+      $('lista').innerHTML = t.habitos.length
+        ? t.habitos.map(cartaoDo).join('')
+        : '<section class="cartao"><p class="vazio">Comece com um hábito só: escolha quem você quer ser e a menor versão possível do hábito.</p></section>';
+    }
+
+    async function carregar() {
+      document.body.classList.add('carregando');
+      try {
+        desenhar(await chamar('carregarTela'));
+      } catch (erro) {
+        avisar(textoDoErro(erro), 'erro');
+      } finally {
+        document.body.classList.remove('carregando');
+      }
+    }
+
+    function abrirFormulario(h) {
+      editando = h ? h.id : null;
+      $('titulo-form').textContent = h ? 'Editar hábito' : 'Novo hábito';
+      for (const campo of ['identidade', 'nome', 'minimo', 'deixa', 'recompensa']) $(campo).value = h ? h[campo] || '' : '';
+      $('arquivar').hidden = !h;
+      $('painel').hidden = false;
+      $('novo').hidden = true;
+      $('painel').scrollIntoView?.({ behavior: 'smooth' });
+      $(h ? 'nome' : 'identidade').focus();
+    }
+
+    function fecharFormulario() {
+      editando = null;
+      $('painel').hidden = true;
+      $('novo').hidden = false;
+    }
+
+    // Marcar responde na hora: a tela muda antes de o servidor confirmar.
+    // Se o servidor recusar, a tela volta ao que era e mostra o motivo.
+    function comMarcacao(t, id, acao) {
+      const copia = JSON.parse(JSON.stringify(t));
+      const h = copia.habitos.find((x) => x.id === id);
+      if (!h) return copia;
+      const ultimo = h.corrente.length - 1;
+      if (acao === 'desfazer') {
+        if (!h.hoje) return copia;
+        h.hoje = '';
+        h.votos--; copia.votos--; copia.feitosHoje--;
+        h.sequencia = Math.max(0, h.sequencia - 1);
+        h.corrente[ultimo] = 'hoje';
+      } else {
+        if (!h.hoje) { h.votos++; copia.votos++; copia.feitosHoje++; h.sequencia++; }
+        h.hoje = acao;
+        h.faltas = 0;
+        h.corrente[ultimo] = acao;
+      }
+      return copia;
+    }
+
+    let pendentes = 0;
+    let houveSobreposicao = false;
+    $('lista').addEventListener('click', async (evento) => {
+      const botao = evento.target.closest('button[data-acao]');
+      if (!botao) return;
+      const { acao, id } = botao.dataset;
+      if (acao === 'editar') return abrirFormulario(tela.habitos.find((h) => h.id === id));
+      const anterior = tela;
+      desenhar(comMarcacao(tela, id, acao));
+      if (acao !== 'desfazer') avisar('Mais um voto para quem você quer ser.');
+      if (pendentes > 0) houveSobreposicao = true;
+      pendentes++;
+      try {
+        const resposta = acao === 'desfazer' ? await chamar('desmarcar', id) : await chamar('marcar', id, acao);
+        if (pendentes === 1 && !houveSobreposicao) desenhar(resposta);
+      } catch (erro) {
+        if (pendentes === 1) desenhar(anterior);
+        avisar(textoDoErro(erro), 'erro');
+      } finally {
+        pendentes--;
+        // Vários toques seguidos: no fim, busca o estado oficial uma vez.
+        if (pendentes === 0 && houveSobreposicao) { houveSobreposicao = false; carregar(); }
+      }
+    });
+
+    $('form').addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const dados = { id: editando };
+      for (const campo of ['identidade', 'nome', 'minimo', 'deixa', 'recompensa']) dados[campo] = $(campo).value;
+      enquantoSalva($('salvar'), 'Salvando…', async () => {
+        desenhar(await chamar('salvarHabito', dados));
+        fecharFormulario();
+        avisar('Hábito salvo.');
+      });
+    });
+
+    $('arquivar').addEventListener('click', () => {
+      const botao = $('arquivar');
+      if (!confirmarComSegundoToque(botao, 'Confirmar arquivamento')) return;
+      enquantoSalva(botao, '…', async () => {
+        desenhar(await chamar('arquivarHabito', editando));
+        fecharFormulario();
+        avisar('Hábito arquivado. O histórico continua na planilha.');
+      });
+    });
+
+    $('novo').addEventListener('click', () => abrirFormulario(null));
+    $('cancelar').addEventListener('click', fecharFormulario);
+    $('atualizar').addEventListener('click', carregar);
+    carregar();
+  </script>
+</body>
+</html>

@@ -13,7 +13,9 @@ Para quando a conversa acontece num ambiente com terminal e acesso a pastas (Cla
 
 - Pasta própria, com git, e o código em `src/`.
 - **Projeto que já existe:** a pessoa copia o **ID do script** em **Configurações do projeto** no editor. Depois: `clasp clone <ID do script> --rootDir src`.
-- **Projeto novo:** `clasp create --type sheets --title "Nome do app" --rootDir src` cria a planilha e o script ligado a ela. Copie para `src/` o `assets/nucleo/Nucleo.gs` e o `App.gs` do formato escolhido (`assets/app-web/` ou `assets/planilha/`); com tarefas automáticas, também `assets/nucleo/Tarefas.gs`; no app da Web, também `assets/nucleo/base.html`, o `index.html` e o `appsscript.json`. Os `.gs` podem virar `.js`, o clasp converte. Apague o `Code.js` vazio que o `clasp create` deixa.
+- **Projeto novo:** `clasp create --type sheets --title "Nome do app" --rootDir src` (no clasp 3, também `clasp create-script`) cria a planilha e o script ligado a ela, e baixa para `src/` um `appsscript.json` padrão, no fuso de Nova York. **Depois** do create, copie para `src/` o `assets/nucleo/Nucleo.gs` e o `App.gs` do formato escolhido (`assets/app-web/` ou `assets/planilha/`); com tarefas automáticas, também `assets/nucleo/Tarefas.gs`; no app da Web, também `assets/nucleo/base.html`, o `index.html` e o `appsscript.json` do modelo, por cima do padrão. Os `.gs` podem virar `.js`, o clasp converte. Se aparecer um `Code.js` vazio, apague.
+- **A planilha criada pelo clasp nasce em inglês e no fuso GMT.** O `setup` do núcleo acerta fuso e idioma quando a planilha é nova; numa planilha antiga, confira em **Arquivo > Configurações**.
+- **O primeiro `setup` é no editor:** abra `https://script.google.com/d/<ID do script>/edit`, clique no arquivo Nucleo, escolha `setup` e clique em Executar. A pessoa aprova a autorização; se você usa um navegador próprio, ela precisa entrar na conta Google nele uma vez.
 - **Os arquivos fixos continuam fixos** neste modo (Nucleo, Tarefas, base): edite só App e index. Com o código no computador, rode `scripts/revisar_seguranca.py src` antes de cada `clasp push`.
 - Um arquivo de instruções do projeto na pasta (`CLAUDE.md` no Claude Code, `AGENTS.md` no Codex e no opencode) com: o que o app faz, o fluxo abaixo e os links do projeto (ID do script, planilha, link /exec, ID da implantação). Esses links não são senhas, mas não devem ir para repositório público.
 - `.gitignore` com `node_modules/`, `.clasprc.json` e `.env`.
@@ -25,8 +27,9 @@ Para quando a conversa acontece num ambiente com terminal e acesso a pastas (Cla
 3. `clasp push` envia o código. Se a pessoa também mexe pelo editor do navegador, rode `clasp pull` antes, senão o push apaga as mudanças dela.
 4. Abrir o link **/dev** no navegador (ele sempre roda o último código enviado). Na primeira vez, a pessoa entra na conta Google no navegador que você usa.
 5. Conferir na planilha o que foi gravado, pelo conector do Google Planilhas se houver, com a permissão da pessoa.
-6. Publicar no link de sempre: `clasp deploy -i <ID da implantação> -d "o que mudou"`. Sem o `-i`, o clasp cria uma implantação nova, com link novo. `clasp list-deployments` mostra os IDs.
-7. Commit no git.
+6. Publicar no link de sempre: `clasp update-deployment <ID da implantação> -d "o que mudou"` (ou `clasp deploy -i <ID> -d "..."`). Sem o ID, o clasp cria uma implantação nova, com link novo. A primeira é `clasp create-deployment -d "versão 1"`, que usa o acesso do `appsscript.json`. `clasp list-deployments` mostra os IDs.
+7. Medir, se o app parecer lento: a página `https://script.google.com/home/projects/<ID do script>/executions` mostra quanto cada chamada levou.
+8. Commit no git.
 
 ## Segurança deste modo
 

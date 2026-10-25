@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  NÚCLEO · skill "apps-na-planilha" · versão 1
+ *  NÚCLEO · skill "apps-na-planilha" · versão 3
  * ============================================================
  *  Este arquivo é igual em todo app feito com a skill. Não edite:
  *  quando houver versão nova, ela vem inteira. O que muda de um app
@@ -23,7 +23,7 @@
  * ============================================================
  */
 
-var NUCLEO_VERSAO = '1';
+var NUCLEO_VERSAO = '3';
 
 var FORMATOS_ = {
   data: 'dd/mm/yyyy',
@@ -32,6 +32,10 @@ var FORMATOS_ = {
 };
 
 var TRAVA_ = { ativa: false };
+
+// Memória de uma chamada só: cada chamada ao app começa do zero no Google.
+// Evita abrir a planilha e reler a mesma aba várias vezes na mesma ação.
+var CACHE_ = { planilha: null, fuso: null, abas: {}, mapas: {}, linhas: {} };
 
 // ============================================================
 // Preparação
@@ -43,6 +47,13 @@ function setup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) throw new Error('Abra o editor pela planilha (Extensões > Apps Script) e rode o setup de lá.');
   PropertiesService.getScriptProperties().setProperty('PLANILHA_ID', ss.getId());
+  // Planilha nova (uma aba só, vazia) pode ter nascido em inglês e no fuso GMT,
+  // como as criadas por ferramentas. Acerta antes de criar as abas.
+  var abas = ss.getSheets();
+  if (abas.length === 1 && abas[0].getLastRow() === 0 && abas[0].getLastColumn() === 0) {
+    ss.setSpreadsheetTimeZone(APP.fuso || Session.getScriptTimeZone());
+    ss.setSpreadsheetLocale(APP.localidade || 'pt_BR');
+  }
   var criadas = Object.keys(TABELAS).filter(function (chave) { return criarAbaSeFaltar_(ss, chave); });
   criadas.forEach(function (chave) { aplicarValidacoes_(ss, chave); });
   if (typeof aoPreparar_ === 'function') aoPreparar_(ss);
@@ -101,16 +112,26 @@ function aplicarValidacoes_(ss, chave) {
 /**
  * Todas as linhas preenchidas de uma tabela, como objetos { campo: valor, _linha: n }.
  * As colunas são achadas pelo título na linha 1, então colunas extras ou fora
- * de ordem na planilha não atrapalham.
+ * de ordem na planilha não atrapalham. Dentro da mesma chamada, a segunda leitura
+ * vem da memória; quem grava apaga essa memória. Não altere os objetos devolvidos.
  */
 function lerLinhas_(chave) {
+  if (!CACHE_.linhas[chave]) CACHE_.linhas[chave] = lerDaPlanilha_(chave);
+  return CACHE_.linhas[chave].slice();
+}
+
+function esquecerLinhas_(chave) {
+  delete CACHE_.linhas[chave];
+}
+
+function lerDaPlanilha_(chave) {
   var def = tabela_(chave);
   var aba = aba_(chave);
   var total = aba.getLastRow() - 1;
   if (total < 1) return [];
   var mapa = mapaDe_(aba, def);
   var campos = Object.keys(def.colunas);
-  var fuso = aba.getParent().getSpreadsheetTimeZone();
+  var fuso = fusoDaPlanilha_();
   var linhas = [];
   aba.getRange(2, 1, total, mapa.largura).getValues().forEach(function (valores, i) {
     var obj = { _linha: i + 2 };
@@ -141,9 +162,13 @@ function adicionarLinha_(chave, dados) {
     celulas[campo] = paraCelula_(col.tipo, valor);
   });
   comTrava_(function () {
+    esquecerLinhas_(chave); // dentro da trava, relê: outra pessoa pode ter acabado de gravar
     var aba = aba_(chave);
     var mapa = mapaDe_(aba, def);
-    var linha = ultimaLinhaComDados_(aba, def, mapa) + 1;
+    var existentes = lerLinhas_(chave);
+    // Linha logo depois da última com dados. Caixas de seleção vazias e colunas
+    // extras da pessoa (como fórmulas puxadas até o fim) não contam.
+    var linha = (existentes.length ? existentes[existentes.length - 1]._linha : 1) + 1;
     if (linha > aba.getMaxRows()) aba.insertRowsAfter(aba.getMaxRows(), 50);
     campos.forEach(function (campo) {
       var tipo = def.colunas[campo].tipo;
@@ -152,6 +177,7 @@ function adicionarLinha_(chave, dados) {
       if (FORMATOS_[tipo]) celula.setNumberFormat(FORMATOS_[tipo]);
     });
     gravarNaLinha_(aba, linha, mapa.colunas, celulas);
+    esquecerLinhas_(chave);
   });
   return registro;
 }
@@ -166,6 +192,7 @@ function atualizarLinha_(chave, id, mudancas) {
     novos[campo] = paraCelula_(col.tipo, mudancas[campo]);
   });
   comTrava_(function () {
+    esquecerLinhas_(chave); // a linha certa é achada com dados frescos, dentro da trava
     var linha = acharLinha_(chave, id);
     if (!linha) throw new Error('Esse registro não existe mais. Atualize a tela.');
     var aba = aba_(chave);
@@ -175,15 +202,18 @@ function atualizarLinha_(chave, id, mudancas) {
       if (formato) aba.getRange(linha, mapa.colunas[campo]).setNumberFormat(formato);
     });
     gravarNaLinha_(aba, linha, mapa.colunas, novos);
+    esquecerLinhas_(chave);
   });
 }
 
 /** Apaga a linha achada pelo ID. */
 function excluirLinha_(chave, id) {
   comTrava_(function () {
+    esquecerLinhas_(chave);
     var linha = acharLinha_(chave, id);
     if (!linha) throw new Error('Esse registro não existe mais. Atualize a tela.');
     aba_(chave).deleteRow(linha);
+    esquecerLinhas_(chave);
   });
 }
 
@@ -192,14 +222,8 @@ function acharLinha_(chave, id) {
   var def = tabela_(chave);
   var campoId = Object.keys(def.colunas).filter(function (c) { return def.colunas[c].tipo === 'id'; })[0];
   if (!campoId) throw new Error('A aba "' + def.aba + '" não tem coluna de ID.');
-  var aba = aba_(chave);
-  var total = aba.getLastRow() - 1;
-  if (total < 1) return 0;
-  var ids = aba.getRange(2, mapaDe_(aba, def).colunas[campoId], total, 1).getValues();
-  for (var i = 0; i < ids.length; i++) {
-    if (String(ids[i][0]) === String(id)) return i + 2;
-  }
-  return 0;
+  var achada = lerLinhas_(chave).filter(function (l) { return String(l[campoId]) === String(id); })[0];
+  return achada ? achada._linha : 0;
 }
 
 /** Número da coluna de cada campo (1 = coluna A), achado pelo título. Útil em gatilhos de edição. */
@@ -214,10 +238,17 @@ function tabela_(chave) {
 }
 
 function aba_(chave) {
+  if (CACHE_.abas[chave]) return CACHE_.abas[chave];
   var def = tabela_(chave);
   var aba = planilha_().getSheetByName(def.aba);
   if (!aba) throw new Error('A aba "' + def.aba + '" não existe. ' + (def.externa ? 'Ligue o formulário à planilha.' : 'Rode a função setup de novo.'));
+  CACHE_.abas[chave] = aba;
   return aba;
+}
+
+function fusoDaPlanilha_() {
+  if (!CACHE_.fuso) CACHE_.fuso = planilha_().getSpreadsheetTimeZone();
+  return CACHE_.fuso;
 }
 
 /**
@@ -226,20 +257,24 @@ function aba_(chave) {
  * existe e corrige o ID guardado se ele estiver velho (ex.: depois de uma cópia).
  */
 function planilha_() {
+  if (CACHE_.planilha) return CACHE_.planilha;
   var props = PropertiesService.getScriptProperties();
   var id = props.getProperty('PLANILHA_ID');
   var ativa = null;
   try { ativa = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) { ativa = null; }
   if (ativa) {
     if (ativa.getId() !== id) props.setProperty('PLANILHA_ID', ativa.getId());
+    CACHE_.planilha = ativa;
     return ativa;
   }
   if (!id) throw new Error('A planilha ainda não foi preparada. Rode a função setup uma vez no editor.');
-  return SpreadsheetApp.openById(id);
+  CACHE_.planilha = SpreadsheetApp.openById(id);
+  return CACHE_.planilha;
 }
 
 /** Onde está cada campo na aba, pelo título da coluna na linha 1. */
 function mapaDe_(aba, def) {
+  if (CACHE_.mapas[def.aba]) return CACHE_.mapas[def.aba];
   var largura = Math.max(aba.getLastColumn(), 1);
   var titulos = aba.getRange(1, 1, 1, largura).getValues()[0].map(function (t) { return String(t).trim().toLowerCase(); });
   var colunas = {};
@@ -248,26 +283,8 @@ function mapaDe_(aba, def) {
     if (i < 0) throw new Error('A aba "' + def.aba + '" não tem a coluna "' + def.colunas[campo].titulo + '". Confira os títulos na linha 1.');
     colunas[campo] = i + 1;
   });
-  return { colunas: colunas, largura: largura };
-}
-
-/**
- * Última linha com algum dado nas colunas da tabela. Caixas de seleção vazias e
- * colunas extras da pessoa (como fórmulas puxadas até o fim) não contam.
- */
-function ultimaLinhaComDados_(aba, def, mapa) {
-  var ultima = aba.getLastRow();
-  if (ultima < 2) return 1;
-  var campos = Object.keys(def.colunas).filter(function (c) { return def.colunas[c].tipo !== 'marcador'; });
-  var valores = aba.getRange(2, 1, ultima - 1, mapa.largura).getValues();
-  for (var i = valores.length - 1; i >= 0; i--) {
-    var temDado = campos.some(function (c) {
-      var v = valores[i][mapa.colunas[c] - 1];
-      return v !== '' && v !== null;
-    });
-    if (temDado) return i + 2;
-  }
-  return 1;
+  CACHE_.mapas[def.aba] = { colunas: colunas, largura: largura };
+  return CACHE_.mapas[def.aba];
 }
 
 /** Grava os valores em blocos de colunas vizinhas, sem tocar nas outras colunas da linha. */
@@ -292,8 +309,10 @@ function lerCelula_(tipo, valor, fuso) {
     var n = typeof valor === 'number' ? valor : paraNumero_(valor);
     return isFinite(n) ? n : null;
   }
+  // Data pura é lida no fuso da planilha (é nele que a célula guarda a meia-noite);
+  // data e hora é um instante, mostrado no fuso do app.
   if (tipo === 'data') return isoDe_(valor, fuso);
-  if (tipo === 'dataHora') return valor instanceof Date ? Utilities.formatDate(valor, fuso, "yyyy-MM-dd'T'HH:mm") : String(valor);
+  if (tipo === 'dataHora') return valor instanceof Date ? Utilities.formatDate(valor, APP.fuso || fuso, "yyyy-MM-dd'T'HH:mm") : String(valor);
   return String(valor);
 }
 

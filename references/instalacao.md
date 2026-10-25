@@ -2,6 +2,8 @@
 
 Guia para conduzir a pessoa do zero até o app funcionando. Mande em blocos curtos e espere ela dizer que terminou antes de seguir, principalmente depois de autorizar e de publicar. Os nomes dos botões estão como aparecem no Google em português; podem mudar um pouco com o tempo, então diga também onde o botão fica.
 
+Se a conta Google da pessoa estiver em inglês, o editor aparece em inglês: **Executar** = Run, **Implantar** = Deploy, **Revisar permissões** = Review permissions, **Avançado** = Advanced, **Acessar ... (não seguro)** = Go to ... (unsafe), **Permitir** = Allow, **Gerenciar implantações** = Manage deployments.
+
 Precisa de uma conta Google e de um computador com navegador. O celular entra no fim.
 
 **Qual conta usar:** para app pessoal, a conta Google pessoal (gmail). Conta do trabalho (Google Workspace) pode ter o Apps Script bloqueado pelo administrador, e dado pessoal não deve morar na conta da empresa.
@@ -21,12 +23,12 @@ Precisa de uma conta Google e de um computador com navegador. O celular entra no
 
 ## Parte 2. Preparar a planilha e autorizar
 
-9. No topo do editor, ao lado dos botões **Executar** e **Depurar**, tem uma lista com nomes de funções. Escolha **setup** e clique em **Executar**.
+9. Na lista de arquivos à esquerda, clique em **Nucleo**. No topo do editor, ao lado dos botões **Executar** e **Depurar**, tem uma lista com nomes de funções: ela mostra só as funções do arquivo aberto, por isso o Nucleo precisa estar aberto. Escolha **setup** e clique em **Executar**.
 10. Aparece **Autorização necessária**. Clique em **Revisar permissões** e escolha a sua conta.
 11. Aparece a tela **O Google não verificou este app**. Isso é esperado: explique antes de a pessoa clicar (texto pronto em `seguranca.md`, seção 5.1). Clique em **Avançado** e depois em **Acessar [nome do projeto] (não seguro)**.
 12. Leia a lista de permissões com a pessoa. Se aparecerem caixas de seleção, marque todas: sem elas o app dá erro. Clique em **Permitir**.
 13. Embaixo do código aparece o **Registro de execução**, terminando em **Execução concluída**. Volte para a aba da planilha: as abas do app foram criadas.
-14. **Se o app tem tarefas automáticas** (lembretes, avisos, `APP.tarefas`): escolha **instalarGatilhos** na lista e clique em **Executar**. O Google pede as permissões novas (por exemplo, enviar e-mail e rodar quando você não estiver presente); explique cada uma antes. Para conferir, abra **Acionadores** (ícone de relógio, no menu à esquerda do editor).
+14. **Se o app tem tarefas automáticas** (lembretes, avisos, `APP.tarefas`): clique no arquivo **Tarefas**, escolha **instalarGatilhos** na lista e clique em **Executar**. O Google pede as permissões novas (por exemplo, enviar e-mail e rodar quando você não estiver presente); explique cada uma antes. Para conferir, abra **Acionadores** (ícone de relógio, no menu à esquerda do editor).
 
 ## Parte 3A. Planilha + automações: usar
 
@@ -71,7 +73,7 @@ Planilha + automações e formulário não têm o passo de publicar: salvou, val
 | O que aparece | O que fazer |
 |---|---|
 | "Desculpe, não foi possível abrir o arquivo no momento", página em branco ou erro 400 no app da Web | O navegador está conectado em mais de uma conta Google. Abra o link numa janela anônima e entre só na conta dona do app, ou use um perfil do navegador só com essa conta. |
-| A lista de funções não mostra **setup** | Salve com Ctrl+S e confira se Nucleo e App foram colados inteiros. |
+| A lista de funções não mostra **setup** | A lista mostra só as funções do arquivo aberto: clique no arquivo **Nucleo** (para **instalarGatilhos**, no **Tarefas**). Se ainda não aparecer, salve com Ctrl+S e confira se o arquivo foi colado inteiro. |
 | "A aba X não tem a coluna Y" | Um título da linha 1 foi renomeado ou apagado. Volte o título ao nome original (pode mudar a posição da coluna à vontade). |
 | "A planilha ainda não foi preparada" | Rode **setup** pelo editor (Parte 2). |
 | "A aba Respostas ao formulário 1 não existe" | Ligue o formulário à planilha (Parte 3B). |
@@ -80,7 +82,7 @@ Planilha + automações e formulário não têm o passo de publicar: salvou, val
 | Mudei o código e o app da Web continua igual | Faltou publicar a nova versão (Parte 4). Para testar sem publicar, use o link **/dev**. |
 | O lembrete não chegou | Confira **Acionadores** no editor. Se a tarefa não está lá, rode **instalarGatilhos**. Quando uma tarefa falha, o Google manda um e-mail com o erro. |
 | Datas um dia antes ou depois | No editor, **Configurações do projeto** (engrenagem) > fuso horário. Na planilha, **Arquivo > Configurações** > fuso horário. Os dois no horário de Brasília (GMT-03:00, São Paulo). |
-| Faixa "Este aplicativo foi criado por um usuário do Google Apps Script" | Normal quando outra pessoa abre o app da Web. É o Google avisando que o app não é dele. |
+| Faixa "Este aplicativo foi criado por um usuário do Google Apps Script" no topo | Normal em todo app da Web feito no Apps Script, até para quem o criou. É o Google avisando que o app não é dele. Dá para fechar no X. |
 | Qualquer outro erro | No editor, abra **Execuções** (menu à esquerda), copie a mensagem de erro e me mande. Tire nomes, valores e e-mails antes de colar. |
 
 ## Parte 6. Cópia e backup
