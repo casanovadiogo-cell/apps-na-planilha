@@ -1,6 +1,8 @@
 ---
 name: apps-na-planilha
 description: Cria pequenos apps pessoais ou para grupos pequenos com Google Planilhas e Apps Script (planilha com automações, formulário ou app da Web no celular), de graça, sem hospedagem e sem instalar nada, pensado para quem não programa. Escolhe o formato mais simples que resolve, conduz a pessoa clique a clique até o app funcionar, entrega código seguro a partir de um núcleo fixo e testado e explica riscos de segurança e privacidade em linguagem simples. Use sempre que alguém quiser criar, publicar, corrigir ou melhorar um app simples para a própria vida, a família, amigos ou colegas (controle financeiro, gastos, hábitos, treinos, lista de compras, estoque de casa, caderneta do pet, contas a pagar, bingo, bolão, sorteio, votação, escala, check-in, lembretes) ou mencionar Apps Script, web app do Google, automatizar planilha, transformar planilha em app ou colocar um app pequeno no ar sem servidor, mesmo sem citar Apps Script. Também cobre análises de IA agendadas (Gemini, ChatGPT, Claude) sobre os dados.
+license: MIT
+compatibility: Funciona em agentes compatíveis com Agent Skills (Claude, Codex, opencode, Antigravity). O caminho padrão não exige nada instalado; Python 3 é opcional, para o verificador de segurança; Node.js e clasp só no modo avançado.
 ---
 
 # Apps na planilha
@@ -20,8 +22,8 @@ Quem pede costuma ser técnico no sentido amplo (usa bem o computador, entende p
 
 ## Dois caminhos de trabalho
 
-- **Copiar e colar (padrão).** Funciona em qualquer conversa, inclusive no claude.ai. Você escreve os arquivos e a pessoa cola no editor do Apps Script.
-- **Modo avançado (clasp).** Se você está num ambiente com terminal (Claude Code, app para computador com acesso a pastas) e o app vai ter muitas rodadas de ajuste, ofereça editar, enviar e testar direto. Exige instalar Node.js e fazer login uma vez. Veja `references/modo-avancado-clasp.md`.
+- **Copiar e colar (padrão).** Funciona em qualquer conversa, até num app de chat sem acesso a arquivos. Você escreve os arquivos e a pessoa cola no editor do Apps Script.
+- **Modo avançado (clasp).** Se você roda num ambiente com terminal e acesso a pastas (Claude Code, Codex, opencode, Antigravity e parecidos) e o app vai ter muitas rodadas de ajuste, ofereça editar, enviar e testar direto. Exige instalar Node.js e fazer login uma vez. Veja `references/modo-avancado-clasp.md`.
 
 Se a conversa tiver os conectores do Google Planilhas ou Drive, eles ajudam a conferir os dados gravados durante testes (sempre com a permissão da pessoa), mas o código do Apps Script é colado no editor.
 

@@ -1,6 +1,6 @@
-# Modo avançado: Claude edita, publica e testa sozinho (clasp)
+# Modo avançado: o agente edita, publica e testa sozinho (clasp)
 
-Para quando a conversa acontece num ambiente com terminal (Claude Code, ou o app Claude para computador com acesso a pastas) e a pessoa quer parar de copiar e colar. Você passa a editar os arquivos, enviar o código, testar o link e conferir a planilha. Custa uma preparação de uns 15 minutos e a instalação do Node.js, então ofereça quando o app vai ter muitas rodadas de ajuste, não na primeira conversa.
+Para quando a conversa acontece num ambiente com terminal e acesso a pastas (Claude Code, Codex, opencode, Antigravity ou outro agente parecido) e a pessoa quer parar de copiar e colar. Você passa a editar os arquivos, enviar o código, testar o link e conferir a planilha. Custa uma preparação de uns 15 minutos e a instalação do Node.js, então ofereça quando o app vai ter muitas rodadas de ajuste, não na primeira conversa.
 
 ## Preparação (uma vez por computador)
 
@@ -15,7 +15,7 @@ Para quando a conversa acontece num ambiente com terminal (Claude Code, ou o app
 - **Projeto que já existe:** a pessoa copia o **ID do script** em **Configurações do projeto** no editor. Depois: `clasp clone <ID do script> --rootDir src`.
 - **Projeto novo:** `clasp create --type sheets --title "Nome do app" --rootDir src` cria a planilha e o script ligado a ela. Copie para `src/` o `assets/nucleo/Nucleo.gs` e o `App.gs` do formato escolhido (`assets/app-web/` ou `assets/planilha/`); com tarefas automáticas, também `assets/nucleo/Tarefas.gs`; no app da Web, também `assets/nucleo/base.html`, o `index.html` e o `appsscript.json`. Os `.gs` podem virar `.js`, o clasp converte. Apague o `Code.js` vazio que o `clasp create` deixa.
 - **Os arquivos fixos continuam fixos** neste modo (Nucleo, Tarefas, base): edite só App e index. Com o código no computador, rode `scripts/revisar_seguranca.py src` antes de cada `clasp push`.
-- Um `CLAUDE.md` na pasta com: o que o app faz, o fluxo abaixo e os links do projeto (ID do script, planilha, link /exec, ID da implantação). Esses links não são senhas, mas não devem ir para repositório público.
+- Um arquivo de instruções do projeto na pasta (`CLAUDE.md` no Claude Code, `AGENTS.md` no Codex e no opencode) com: o que o app faz, o fluxo abaixo e os links do projeto (ID do script, planilha, link /exec, ID da implantação). Esses links não são senhas, mas não devem ir para repositório público.
 - `.gitignore` com `node_modules/`, `.clasprc.json` e `.env`.
 
 ## O ciclo de cada mudança
