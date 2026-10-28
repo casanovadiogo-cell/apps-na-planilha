@@ -80,7 +80,7 @@ Um resumo curto, de 4 a 7 pontos, escolhidos para o app em questão:
 - **Sua conta Google é a fechadura de tudo:** ative a verificação em duas etapas (myaccount.google.com > Segurança).
 - **O que o app guarda:** [lista curta]. Evite colocar CPF, número de cartão, senhas ou dados de saúde de outras pessoas.
 - **Backup:** **Arquivo > Histórico de versões** na planilha desfaz estragos.
-- **Mudanças de código:** sempre pelo editor, colando o arquivo inteiro que eu mandar, e só no App ou no index. Desconfie de quem pedir para você colar código que você não sabe de onde veio.
+- **Mudanças de código:** só no App, no index e em arquivos do próprio app, enviadas por mim pelo clasp ou coladas inteiras no editor. Desconfie de quem pedir para você colar código que você não sabe de onde veio.
 
 ### 5.3 Ao abrir para outras pessoas
 

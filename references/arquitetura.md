@@ -21,7 +21,7 @@ Para quem não programa, isso vira uma regra simples: os arquivos fixos são col
 | `App.gs` | `assets/app-web/App.gs` ou `assets/planilha/App.gs`, adaptado | A cada mudança no app |
 | `base.html` (só app da Web) | `assets/nucleo/base.html`, copiado igual | Só com versão nova |
 | `index.html` (só app da Web) | `assets/app-web/index.html`, adaptado | A cada mudança na tela |
-| `appsscript.json` | `assets/app-web/appsscript.json` | Só no modo avançado (clasp) |
+| `appsscript.json` | `assets/app-web/appsscript.json` | Só no modo clasp |
 
 No editor, os nomes aparecem como `Nucleo`, `Tarefas`, `App`, `base` e `index`; o editor completa a extensão.
 

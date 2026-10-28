@@ -1,5 +1,7 @@
 # Instalação passo a passo (sem instalar nada no computador)
 
+Caminho do navegador, copiando e colando: quando a pessoa escolheu esse caminho ou quando você não consegue rodar comandos no computador dela. No modo clasp, use `references/modo-avancado-clasp.md` em vez deste guia; a tabela de erros da Parte 5 vale para os dois.
+
 Guia para conduzir a pessoa do zero até o app funcionando. Mande em blocos curtos e espere ela dizer que terminou antes de seguir, principalmente depois de autorizar e de publicar. Os nomes dos botões estão como aparecem no Google em português; podem mudar um pouco com o tempo, então diga também onde o botão fica.
 
 Se a conta Google da pessoa estiver em inglês, o editor aparece em inglês: **Executar** = Run, **Implantar** = Deploy, **Revisar permissões** = Review permissions, **Avançado** = Advanced, **Acessar ... (não seguro)** = Go to ... (unsafe), **Permitir** = Allow, **Gerenciar implantações** = Manage deployments.
@@ -62,7 +64,7 @@ Precisa de uma conta Google e de um computador com navegador. O celular entra no
 Sempre que eu mandar uma versão nova:
 
 1. Cole por cima, inteiro, só o arquivo que mudou (normalmente **App**, e **index** no app da Web) e salve. **Nucleo**, **Tarefas** e **base** só mudam quando eu disser que saiu versão nova deles.
-2. Se a mudança pede permissão nova (enviar e-mail, rodar sozinho), rode **setup** pelo editor para autorizar. Se mudou alguma tarefa automática, rode **instalarGatilhos** de novo.
+2. Se a mudança pede permissão nova (enviar e-mail, rodar sozinho, acessar a internet), rode pelo editor uma função que use esse serviço: o editor só pede as permissões que a função escolhida usa, então **setup** pode não pedir a nova. Eu indico qual função rodar. O link **/dev** não pede autorização nova. Se mudou alguma tarefa automática, rode **instalarGatilhos** de novo.
 3. **No app da Web, para testar antes:** **Implantar > Testar implantações** e copie o link que termina em **/dev**. Ele roda sempre o último código salvo e só quem edita o projeto consegue abrir.
 4. **No app da Web, para publicar:** **Implantar > Gerenciar implantações**, selecione a implantação que já existe, clique no lápis (**Editar**), em **Versão** escolha **Nova versão** e clique em **Implantar**. O link **/exec** continua o mesmo. Cuidado: **Nova implantação** cria um link novo; use só na primeira vez.
 
@@ -78,7 +80,7 @@ Planilha + automações e formulário não têm o passo de publicar: salvou, val
 | "A planilha ainda não foi preparada" | Rode **setup** pelo editor (Parte 2). |
 | "A aba Respostas ao formulário 1 não existe" | Ligue o formulário à planilha (Parte 3B). |
 | "Acesso não autorizado" | Abra o app com a mesma conta que publicou. |
-| "Você não tem permissão" ou "You do not have permission" | Rode **setup** de novo e aceite todas as permissões. |
+| "Você não tem permissão" ou "You do not have permission to call ..." | Falta autorizar um serviço. No editor, rode uma função que use esse serviço (para UrlFetchApp, uma função que chame a API; para e-mail, uma que envie) e aceite. Rodar uma função que não usa o serviço não pede nada. O link que aparece no erro é só o nome da permissão; não precisa abrir. |
 | Mudei o código e o app da Web continua igual | Faltou publicar a nova versão (Parte 4). Para testar sem publicar, use o link **/dev**. |
 | O lembrete não chegou | Confira **Acionadores** no editor. Se a tarefa não está lá, rode **instalarGatilhos**. Quando uma tarefa falha, o Google manda um e-mail com o erro. |
 | Datas um dia antes ou depois | No editor, **Configurações do projeto** (engrenagem) > fuso horário. Na planilha, **Arquivo > Configurações** > fuso horário. Os dois no horário de Brasília (GMT-03:00, São Paulo). |
