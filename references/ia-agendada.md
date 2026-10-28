@@ -84,4 +84,7 @@ Uma tarefa diária pode mandar os números para a API de uma IA (`UrlFetchApp`) 
 - A chave da API fica em **Propriedades do script**, colada pela própria pessoa. Nunca no código.
 - Defina um limite de gastos no painel do provedor da IA.
 - Mande o mínimo: os números agregados, não a planilha inteira com descrições pessoais.
-- A permissão "conectar-se a um serviço externo" passa a aparecer na autorização.
+- A permissão "conectar-se a um serviço externo" passa a aparecer na autorização. Ela só é pedida quando se roda pelo editor uma função que usa `UrlFetchApp`; o link /dev não pede. Crie uma função de teste (por exemplo, `testarGemini`) que faz uma chamada real e pequena à API, e use-a para autorizar e conferir a chave de uma vez.
+- Teste com o mesmo método que o app usa (no Gemini, `models/<modelo>:generateContent`). Chaves do Google AI Studio podem ter acesso só à geração de conteúdo e devolver 403 `PERMISSION_DENIED` em `ModelService.GetModel`, mesmo funcionando no app.
+- Quando a API der erro, registre e mostre o código HTTP e o motivo (`error.status` e `error.message`, cortado em uns 300 caracteres), nunca a chave nem a requisição inteira. Mande a chave no cabeçalho (`x-goog-api-key`), não na URL, para ela não aparecer em logs.
+- Guarde o nome do modelo numa propriedade do script, com um padrão no código, para trocar sem mexer no código.

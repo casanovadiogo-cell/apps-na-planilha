@@ -1,8 +1,8 @@
 ---
 name: apps-na-planilha
-description: Cria pequenos apps pessoais ou para grupos pequenos com Google Planilhas e Apps Script (planilha com automações, formulário ou app da Web no celular), de graça, sem hospedagem e sem instalar nada, pensado para quem não programa. Escolhe o formato mais simples que resolve, conduz a pessoa clique a clique até o app funcionar, entrega código seguro a partir de um núcleo fixo e testado e explica riscos de segurança e privacidade em linguagem simples. Use sempre que alguém quiser criar, publicar, corrigir ou melhorar um app simples para a própria vida, a família, amigos ou colegas (controle financeiro, gastos, hábitos, treinos, lista de compras, estoque de casa, caderneta do pet, contas a pagar, bingo, bolão, sorteio, votação, escala, check-in, lembretes) ou mencionar Apps Script, web app do Google, automatizar planilha, transformar planilha em app ou colocar um app pequeno no ar sem servidor, mesmo sem citar Apps Script. Também cobre análises de IA agendadas (Gemini, ChatGPT, Claude) sobre os dados.
+description: Cria pequenos apps pessoais ou para grupos pequenos com Google Planilhas e Apps Script (planilha com automações, formulário ou app da Web no celular), de graça, sem hospedagem e sem instalar nada, pensado para quem não programa. Escolhe o formato mais simples que resolve, envia e testa o código sozinho pelo clasp (ou guia clique a clique), entrega código seguro a partir de um núcleo fixo e testado e explica riscos de segurança e privacidade em linguagem simples. Use sempre que alguém quiser criar, publicar, corrigir ou melhorar um app simples para a própria vida, a família, amigos ou colegas (controle financeiro, gastos, hábitos, treinos, lista de compras, caderneta do pet, contas a pagar, bingo, bolão, votação, escala, lembretes) ou mencionar Apps Script, web app do Google, automatizar planilha, transformar planilha em app ou colocar um app pequeno no ar sem servidor, mesmo sem citar Apps Script. Também cobre análises de IA agendadas (Gemini, ChatGPT, Claude) sobre os dados.
 license: MIT
-compatibility: Funciona em agentes compatíveis com Agent Skills (Claude, Codex, opencode, Antigravity). O caminho padrão não exige nada instalado; Python 3 é opcional, para o verificador de segurança; Node.js e clasp só no modo avançado.
+compatibility: Funciona em agentes compatíveis com Agent Skills (Claude, Codex, opencode, Antigravity). Com terminal ou acesso ao computador da pessoa, o agente usa Node.js e clasp para enviar e testar o código sozinho; sem isso, o caminho de copiar e colar não exige nada instalado. Python 3 é opcional, para o verificador de segurança.
 ---
 
 # Apps na planilha
@@ -15,17 +15,22 @@ Quem pede costuma ser técnico no sentido amplo (usa bem o computador, entende p
 
 - **Linguagem do dia a dia.** Explique um termo técnico na primeira vez que ele aparecer ("implantar = publicar o app e gerar o link") e depois use o termo.
 - **Um passo de cada vez na instalação.** Mande blocos curtos e espere a pessoa dizer que terminou, principalmente depois de autorizar e de publicar.
-- **Arquivos sempre inteiros.** Nunca "troque a linha 42": mande o arquivo completo e diga onde colar. Quem não programa não consegue fazer emenda com segurança.
+- **Não terceirize o trabalho técnico.** A pessoa não deve colar código nem depurar o app. Você envia o código e testa sozinho (modo clasp); a ela cabem só as decisões e o que exige a conta Google dela (login, autorização, chave de API).
+- **Arquivos sempre inteiros**, se precisar cair no copiar e colar. Nunca "troque a linha 42": mande o arquivo completo e diga onde colar. Quem não programa não consegue fazer emenda com segurança.
 - **Botões em negrito, como aparecem na tela**, e onde ficam ("o botão azul **Implantar**, no canto superior direito").
 - **Nunca peça senha, chave de API ou token no chat.** Se o app precisar de uma chave, a pessoa cola em **Propriedades do script**, e você explica como.
 - **Responda no idioma da pessoa.** A skill está em português porque nasceu para o público brasileiro.
 
 ## Dois caminhos de trabalho
 
-- **Copiar e colar (padrão).** Funciona em qualquer conversa, até num app de chat sem acesso a arquivos. Você escreve os arquivos e a pessoa cola no editor do Apps Script.
-- **Modo avançado (clasp).** Se você roda num ambiente com terminal e acesso a pastas (Claude Code, Codex, opencode, Antigravity e parecidos) e o app vai ter muitas rodadas de ajuste, ofereça editar, enviar e testar direto. Exige instalar Node.js e fazer login uma vez. Veja `references/modo-avancado-clasp.md`.
+- **Modo clasp (padrão).** Sempre que você consegue rodar comandos no computador da pessoa, seja num agente com terminal (Claude Code, Codex, opencode, Antigravity e parecidos), seja num agente na nuvem ligado ao computador dela por pasta conectada e sessão remota. Use desde a primeira conversa, sem esperar a pessoa pedir: você instala o que faltar, envia o código, testa e confere a planilha; ela só liga a API do Apps Script e faz login uma vez. Veja `references/modo-avancado-clasp.md`.
+- **Copiar e colar (último recurso).** Só quando não há terminal nem acesso ao computador da pessoa (por exemplo, um app de chat sem arquivos) ou o clasp não funciona ali. Diga o motivo antes. Você escreve os arquivos e a pessoa cola no editor do Apps Script (`references/instalacao.md`).
 
-Se a conversa tiver os conectores do Google Planilhas ou Drive, eles ajudam a conferir os dados gravados durante testes (sempre com a permissão da pessoa), mas o código do Apps Script é colado no editor.
+Se a conversa tiver os conectores do Google Planilhas ou Drive, use-os para conferir os dados gravados durante os testes e para criar a cópia de teste da planilha (sempre com a permissão da pessoa). O código do Apps Script não passa por eles.
+
+## Testar antes de entregar
+
+A pessoa não quer ser a testadora. Antes de dizer "está pronto" ou de pedir que ela teste algo, teste você mesmo, numa cópia de teste da planilha, com um navegador que você controla (perfil próprio, em que ela entra na conta Google uma vez), funções de teste e a página de **Execuções** do projeto. Confira a planilha depois de toda gravação. Detalhes em `references/modo-avancado-clasp.md`. Só peça a ela o que exige a conta dela, e diga exatamente o que fazer e o que deve aparecer.
 
 ## Fluxo
 
@@ -90,6 +95,8 @@ Regras para o App e o index (detalhes em `references/arquitetura.md`):
 - **Funções que a tela chama ficam sem `_`**, começam com `exigirDono_()` (ou com a conferência do participante, em app de grupo), validam cada parâmetro e devolvem só os campos que a tela usa. Todo o resto termina com `_`.
 - **Os cálculos ficam no App** e a tela só mostra. Um número só para cada coisa, na tela, nos e-mails e para a IA.
 - **Na tela, todo dado passa por `esc()`**, e ações que gravam usam `enquantoSalva`; ações que apagam usam `confirmarComSegundoToque`.
+- **Todo erro aparece em destaque** com `avisar(texto, 'erro')`, nunca só num texto perto do botão, que pode ficar escondido atrás do rodapé ou fora da tela. Se o erro é num campo ou linha, role a tela até ele.
+- **Erros de serviço externo** (API de IA, por exemplo) mostram o código e o motivo que a API devolveu, cortado em poucas centenas de caracteres e sem a chave.
 - **Permissões mínimas:** só use serviços do Google que o app precisa, e não os cite nem em comentários, porque o Google lê o código todo para decidir o que pedir.
 
 **Design sem enrolação.** Apps feitos por IA tendem a encher a tela de números repetidos, textos longos e métricas que fazem sentido para a máquina, não para a pessoa. Evite isso de propósito:
@@ -106,11 +113,13 @@ Regras para o App e o index (detalhes em `references/arquitetura.md`):
 2. Se puder executar Node, confira a sintaxe dos `.gs` (`node --check` numa cópia `.js`).
 3. Atualize o comentário do topo do App: o que o app faz, formato, arquivos e abas. É ele que dá contexto quando a pessoa voltar numa conversa nova.
 
-**Como entregar:** um bloco de código por arquivo, completo, com o nome do arquivo antes. Na primeira vez, todos os arquivos do formato; nas melhorias, só os que mudaram. O `appsscript.json` só entra no modo avançado.
+**Como entregar:** no modo clasp, você envia o código com `clasp push`, testa e só então avisa a pessoa. No copiar e colar, um bloco de código por arquivo, completo, com o nome do arquivo antes: na primeira vez, todos os arquivos do formato; nas melhorias, só os que mudaram. O `appsscript.json` só entra no modo clasp.
 
-### 5. Guiar a instalação
+### 5. Instalar
 
-Siga `references/instalacao.md`: colar o código (Parte 1), rodar o `setup` e autorizar (Parte 2) e a parte do formato (3A, 3B ou 3C). Na tela "O Google não verificou este app", explique o que ela significa antes de a pessoa clicar (seção 5.1 de `references/seguranca.md`) e liste as permissões que vão aparecer, com o porquê de cada uma (seção 4).
+No modo clasp, siga a preparação e o ciclo de `references/modo-avancado-clasp.md`. No copiar e colar, siga `references/instalacao.md`: colar o código (Parte 1), rodar o `setup` e autorizar (Parte 2) e a parte do formato (3A, 3B ou 3C). Nos dois, na tela "O Google não verificou este app", explique o que ela significa antes de a pessoa clicar (seção 5.1 de `references/seguranca.md`) e liste as permissões que vão aparecer, com o porquê de cada uma (seção 4).
+
+**Autorizações:** o editor só pede as permissões que a função escolhida usa, e o link /dev nunca pede autorização nova. Quando o app ganhar um serviço novo (acessar a internet, enviar e-mail), crie uma função curta que use esse serviço e é ela que roda no editor para autorizar.
 
 ### 6. Entregar com os avisos de segurança
 
@@ -118,8 +127,9 @@ Quando o app estiver funcionando, feche com um resumo curto de segurança, de 4 
 
 ### 7. Evoluir o app
 
-- Cada mudança: só os arquivos que mudaram, inteiros. No app da Web, teste pelo link **/dev** e publique por **Gerenciar implantações > Editar > Nova versão**, que mantém o link (Parte 4 de `references/instalacao.md`).
-- Em uma conversa nova, peça para a pessoa colar o App (e o index) atuais antes de mudar qualquer coisa. Nunca reescreva de memória. Os arquivos fixos você já tem.
+- Cada mudança: no modo clasp, `clasp pull`, editar, testar na cópia, enviar e conferir o **/dev** (ciclo em `references/modo-avancado-clasp.md`). No copiar e colar, só os arquivos que mudaram, inteiros, e a Parte 4 de `references/instalacao.md`.
+- **Publicar** no link de sempre (**/exec**) só com a confirmação explícita da pessoa, pedida depois do teste. Nunca diga que publicou, nem que está publicando, antes de o comando terminar e a nova versão aparecer na implantação. Publicar mantém o link: nova versão na implantação que já existe.
+- Em uma conversa nova, comece pelo código atual: `clasp pull` no modo clasp; no copiar e colar, peça para a pessoa colar o App (e o index). Nunca reescreva de memória. Os arquivos fixos você já tem.
 - Quando um pedido aumentar o risco (abrir para outras pessoas, guardar dado sensível, conectar a um serviço externo, ligar uma IA), diga o que muda antes de fazer.
 - Se o pedido couber num formato mais simples do que o atual, ou precisar de um mais completo, diga. A planilha continua a mesma quando o formato muda.
 
@@ -154,10 +164,10 @@ Na prática: o app da Web leva de 1 a 3 segundos para responder, então devolva 
 | `assets/nucleo/` | Arquivos fixos: copie iguais |
 | `assets/app-web/`, `assets/planilha/` | Pontos de partida do App (e do index) |
 | `assets/exemplos/habitos/` | Exemplo completo de app da Web: toque com resposta imediata, sequências, formulário guiado |
-| `references/instalacao.md` | Ao guiar a instalação, ao atualizar o app e quando algo dá errado |
+| `references/instalacao.md` | No copiar e colar, e quando algo dá errado (tabela de erros) |
 | `references/seguranca.md` | Antes de entregar código, na tela de autorização e no resumo final |
 | `references/automacoes.md` | Lembretes por e-mail, avisos e tarefas que rodam sozinhas |
 | `references/apps-em-grupo.md` | Quando várias pessoas usam o mesmo app da Web |
 | `references/ia-agendada.md` | Quando a pessoa quer IA analisando os dados |
-| `references/modo-avancado-clasp.md` | Ambiente com terminal e muitas rodadas de ajuste |
+| `references/modo-avancado-clasp.md` | Sempre que der para rodar comandos no computador da pessoa: preparação, testes, autorizações e publicação |
 | `scripts/revisar_seguranca.py` | Antes de cada entrega, quando der para executar Python |
