@@ -10,7 +10,7 @@ Funciona no **Claude**, no **Codex**, no **opencode** e no **Antigravity**, porq
 
 - **Escolhe o formato mais simples que resolve:** uma planilha com automações (lembretes por e-mail, caixas de seleção que funcionam no celular), um formulário que alimenta a planilha ou um app da Web que abre no celular como se fosse um app.
 - **Escreve o código a partir de um núcleo fixo e testado.** As proteções de segurança moram nesse núcleo, que é igual em todo app. A cada app, o agente escreve só a parte que muda.
-- **Envia e testa o código sozinho.** Quando o agente consegue rodar comandos no seu computador, ele usa o clasp (ferramenta oficial do Google) para mandar o código ao Apps Script, testa numa cópia da planilha e só publica com o seu ok. Você não cola código nem fica depurando. Sem esse acesso, ele conduz a instalação clique a clique.
+- **Pergunta como você prefere trabalhar.** No modo recomendado, o agente usa o clasp (ferramenta oficial do Google) pelo seu computador para mandar o código ao Apps Script, testa numa cópia da planilha e só publica com o seu ok: você não cola código nem fica depurando. Se preferir o navegador, ou se o agente não tiver acesso ao computador, ele conduz a instalação clique a clique.
 - **Explica os riscos em linguagem simples:** o que é a tela "O Google não verificou este app", o que cada permissão significa, por que não compartilhar a planilha.
 - **Ajuda a ligar uma IA aos dados**, com tarefas agendadas do Gemini, do ChatGPT ou do Claude que comentam o que está acontecendo.
 

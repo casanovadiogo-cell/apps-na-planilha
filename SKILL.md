@@ -15,7 +15,7 @@ Quem pede costuma ser técnico no sentido amplo (usa bem o computador, entende p
 
 - **Linguagem do dia a dia.** Explique um termo técnico na primeira vez que ele aparecer ("implantar = publicar o app e gerar o link") e depois use o termo.
 - **Um passo de cada vez na instalação.** Mande blocos curtos e espere a pessoa dizer que terminou, principalmente depois de autorizar e de publicar.
-- **Não terceirize o trabalho técnico.** A pessoa não deve colar código nem depurar o app. Você envia o código e testa sozinho (modo clasp); a ela cabem só as decisões e o que exige a conta Google dela (login, autorização, chave de API).
+- **Não terceirize o trabalho técnico.** A pessoa não deve depurar o app, nem colar código se escolheu o clasp. Você envia o código e testa sozinho; a ela cabem só as decisões e o que exige a conta Google dela (login, autorização, chave de API).
 - **Arquivos sempre inteiros**, se precisar cair no copiar e colar. Nunca "troque a linha 42": mande o arquivo completo e diga onde colar. Quem não programa não consegue fazer emenda com segurança.
 - **Botões em negrito, como aparecem na tela**, e onde ficam ("o botão azul **Implantar**, no canto superior direito").
 - **Nunca peça senha, chave de API ou token no chat.** Se o app precisar de uma chave, a pessoa cola em **Propriedades do script**, e você explica como.
@@ -23,8 +23,15 @@ Quem pede costuma ser técnico no sentido amplo (usa bem o computador, entende p
 
 ## Dois caminhos de trabalho
 
-- **Modo clasp (padrão).** Sempre que você consegue rodar comandos no computador da pessoa, seja num agente com terminal (Claude Code, Codex, opencode, Antigravity e parecidos), seja num agente na nuvem ligado ao computador dela por pasta conectada e sessão remota. Use desde a primeira conversa, sem esperar a pessoa pedir: você instala o que faltar, envia o código, testa e confere a planilha; ela só liga a API do Apps Script e faz login uma vez. Veja `references/modo-avancado-clasp.md`.
-- **Copiar e colar (último recurso).** Só quando não há terminal nem acesso ao computador da pessoa (por exemplo, um app de chat sem arquivos) ou o clasp não funciona ali. Diga o motivo antes. Você escreve os arquivos e a pessoa cola no editor do Apps Script (`references/instalacao.md`).
+- **Modo clasp (recomendado).** Possível sempre que você consegue rodar comandos no computador da pessoa, seja num agente com terminal (Claude Code, Codex, opencode, Antigravity e parecidos), seja num agente na nuvem ligado ao computador dela por pasta conectada e sessão remota. Você instala o que faltar, envia o código, testa e confere a planilha; ela só liga a API do Apps Script e faz login uma vez. Veja `references/modo-avancado-clasp.md`.
+- **Navegador, copiando e colando.** Você escreve os arquivos e a pessoa cola no editor do Apps Script (`references/instalacao.md`). É o caminho quando a pessoa prefere assim, quando não há terminal nem acesso ao computador dela (por exemplo, um app de chat sem arquivos) ou quando o clasp não funciona ali.
+
+**Pergunte no começo.** Na primeira mensagem de um app novo (ou na primeira vez que a pessoa usa a skill), dê uma introdução curta, de duas ou três frases: o app vai morar numa planilha Google, com o código no Apps Script, de graça e sem servidor. Em seguida pergunte qual caminho ela prefere, usando a ferramenta de pergunta com opções do ambiente em que você roda (no Claude Code, `AskUserQuestion`; sem ela, uma pergunta curta no chat):
+
+- **clasp (recomendado):** eu envio, testo e publico o código pelo seu computador, com mais autonomia; você só instala/autoriza uma vez.
+- **Navegador:** eu mando os arquivos e você cola no editor do Apps Script a cada mudança.
+
+Se o ambiente não deixa rodar comandos no computador da pessoa, não ofereça o clasp: explique em uma frase por quê e siga pelo navegador. Guarde a escolha (no arquivo de instruções do projeto, se houver) e não pergunte de novo a cada mudança.
 
 Se a conversa tiver os conectores do Google Planilhas ou Drive, use-os para conferir os dados gravados durante os testes e para criar a cópia de teste da planilha (sempre com a permissão da pessoa). O código do Apps Script não passa por eles.
 
@@ -96,7 +103,6 @@ Regras para o App e o index (detalhes em `references/arquitetura.md`):
 - **Os cálculos ficam no App** e a tela só mostra. Um número só para cada coisa, na tela, nos e-mails e para a IA.
 - **Na tela, todo dado passa por `esc()`**, e ações que gravam usam `enquantoSalva`; ações que apagam usam `confirmarComSegundoToque`.
 - **Todo erro aparece em destaque** com `avisar(texto, 'erro')`, nunca só num texto perto do botão, que pode ficar escondido atrás do rodapé ou fora da tela. Se o erro é num campo ou linha, role a tela até ele.
-- **Erros de serviço externo** (API de IA, por exemplo) mostram o código e o motivo que a API devolveu, cortado em poucas centenas de caracteres e sem a chave.
 - **Permissões mínimas:** só use serviços do Google que o app precisa, e não os cite nem em comentários, porque o Google lê o código todo para decidir o que pedir.
 
 **Design sem enrolação.** Apps feitos por IA tendem a encher a tela de números repetidos, textos longos e métricas que fazem sentido para a máquina, não para a pessoa. Evite isso de propósito:

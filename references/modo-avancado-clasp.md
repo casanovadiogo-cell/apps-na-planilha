@@ -1,8 +1,8 @@
 # Modo clasp: o agente edita, envia, testa e publica
 
-É o caminho padrão sempre que você consegue rodar comandos no computador da pessoa: um agente com terminal local (Claude Code, Codex, opencode, Antigravity e parecidos) ou um agente na nuvem ligado ao computador dela por uma pasta conectada e uma sessão remota. Você edita os arquivos, envia o código, testa e confere a planilha. A pessoa só faz o que exige a conta Google dela: ligar a API, fazer login uma vez e aprovar autorizações.
+É o caminho recomendado sempre que você consegue rodar comandos no computador da pessoa: um agente com terminal local (Claude Code, Codex, opencode, Antigravity e parecidos) ou um agente na nuvem ligado ao computador dela por uma pasta conectada e uma sessão remota. Você edita os arquivos, envia o código, testa e confere a planilha. A pessoa só faz o que exige a conta Google dela: ligar a API, fazer login uma vez e aprovar autorizações.
 
-Quem pede um app pela skill normalmente não programa. Mandar essa pessoa colar arquivos no editor, ou ficar testando cada ajuste, é exatamente o que ela queria evitar. Comece por aqui desde a primeira conversa, sem esperar ela pedir.
+Quem pede um app pela skill normalmente não programa. Colar arquivos no editor e testar cada ajuste é o que costuma cansar essa pessoa. Por isso, na primeira conversa, apresente este modo como o recomendado na pergunta sobre o caminho de trabalho (seção "Dois caminhos de trabalho" do `SKILL.md`).
 
 ## Preparação (uma vez por computador)
 
@@ -49,7 +49,7 @@ Só peça à pessoa o que exige a conta dela (login, autorização, chave de API
 
 ## Autorizações (onde mais se perde tempo)
 
-- **O editor só pede as permissões que a função escolhida usa.** Rodar `setup` ou uma função que só lê a planilha não pede "conectar-se a um serviço externo". Quando o app ganha um serviço novo (UrlFetchApp, MailApp, gatilhos), crie uma função curta que use exatamente esse serviço (por exemplo, `testarGemini`, que faz uma chamada de verdade à API) e peça para a pessoa rodar essa função no editor, ou rode você no seu navegador com a conta dela.
+- **O editor só pede as permissões que a função escolhida usa.** Rodar `setup` ou uma função que só lê a planilha não pede "conectar-se a um serviço externo". Quando o app ganha um serviço novo (UrlFetchApp, MailApp, gatilhos), crie uma função curta que use exatamente esse serviço (por exemplo, uma função que faz uma chamada de verdade ao site externo, ou que envia um e-mail para a própria pessoa) e peça para a pessoa rodar essa função no editor, ou rode você no seu navegador com a conta dela.
 - **O link /dev não dispara autorização nova.** Ele só mostra o erro "You do not have permission to call ...". A autorização sai pelo editor, como acima.
 - **O "link" que aparece no erro de permissão** (`https://www.googleapis.com/auth/...`) é só o nome da permissão. Abrir dá um erro do Google que não significa nada.
 - O Google descobre os escopos sozinho lendo o código. Só mexa em `oauthScopes` no `appsscript.json` se o manifesto já listar escopos à mão.
@@ -70,4 +70,4 @@ Só peça à pessoa o que exige a conta dela (login, autorização, chave de API
 
 ## Quando copiar e colar
 
-Só como último recurso: a conversa não tem terminal nem acesso ao computador da pessoa, ou o clasp não funciona ali por um motivo que você não consegue resolver. Diga o motivo antes e siga `references/instalacao.md`. Se o acesso aparecer depois, migre para este modo.
+Quando a pessoa escolheu o navegador, quando a conversa não tem terminal nem acesso ao computador dela, ou quando o clasp não funciona ali por um motivo que você não consegue resolver (diga o motivo). Siga `references/instalacao.md`. Se ela mudar de ideia ou o acesso aparecer depois, ofereça migrar para este modo.

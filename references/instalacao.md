@@ -1,6 +1,6 @@
 # Instalação passo a passo (sem instalar nada no computador)
 
-Caminho de copiar e colar, para quando você não consegue rodar comandos no computador da pessoa. Se consegue, use `references/modo-avancado-clasp.md` em vez deste guia; a tabela de erros da Parte 5 vale para os dois.
+Caminho do navegador, copiando e colando: quando a pessoa escolheu esse caminho ou quando você não consegue rodar comandos no computador dela. No modo clasp, use `references/modo-avancado-clasp.md` em vez deste guia; a tabela de erros da Parte 5 vale para os dois.
 
 Guia para conduzir a pessoa do zero até o app funcionando. Mande em blocos curtos e espere ela dizer que terminou antes de seguir, principalmente depois de autorizar e de publicar. Os nomes dos botões estão como aparecem no Google em português; podem mudar um pouco com o tempo, então diga também onde o botão fica.
 
